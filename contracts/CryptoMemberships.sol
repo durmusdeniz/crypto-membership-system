@@ -80,7 +80,7 @@ contract CryptoMemberships {
         require(membershipPlan.amount >= refundAmount,'refund amount must be less or equal to paid amount');
         require(msg.sender == merchant, 'only merchant can refund');
 
-        token.transferFrom(membershipPlan.merchantAddress, member, refundAmount);
+        token.transferFrom(merchant, member, refundAmount);
 
         delete memberships[member][membershipPlanId];
 

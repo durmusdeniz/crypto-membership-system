@@ -16,6 +16,7 @@ contract('MembershipSystem', addresses =>{
 
         await token.transfer(subscriber, 1000);
         await token.approve(membershipSystem.address, 1000, {from: subscriber});
+        await token.approve(membershipSystem.address, 1000, {from: merchant});
     });
 
     it('creates plans', async() =>{
@@ -75,4 +76,65 @@ contract('MembershipSystem', addresses =>{
     it('attempt to subscribe to a non existent plan', async() =>{
         await expectRevert(membershipSystem.subscribe(0,{from: subscriber}), 'no such membership plan');
     });
+
+    it('attempt to renew a membership before the due date ', async() =>{
+
+        await membershipSystem.createMembershipPlan(token.address, 100, THIRTY_DAYS, {from: merchant});
+        await membershipSystem.subscribe(0, {from: subscriber});
+
+        await time.increase(ONE_WEEK);
+        await expectRevert(membershipSystem.renew(subscriber, 0), 'membership renewal not due');
+
+
+    });
+
+    it('renewal for a membership',async() =>{
+
+        let merchantBalance, memberBalance;
+        await membershipSystem.createMembershipPlan(token.address, 100, THIRTY_DAYS, {from: merchant});
+        await membershipSystem.subscribe(0, {from: subscriber});
+
+        await time.increase(THIRTY_DAYS + 1);
+        await membershipSystem.renew(subscriber, 0);
+
+        merchantBalance = await token.balanceOf(merchant);
+        memberBalance = await token.balanceOf(subscriber);
+
+        assert(merchantBalance.toString() === '200');
+        assert(memberBalance.toString() === '800' );
+
+
+    });
+
+    it('cancellation of a membership',async() => {
+
+        await membershipSystem.createMembershipPlan(token.address, 100, THIRTY_DAYS, {from: merchant});
+        await membershipSystem.subscribe(0, {from: subscriber});
+
+        await time.increase(ONE_WEEK + 1);
+
+        assert(await membershipSystem.memberships(subscriber,0).length != 0 );
+
+        await membershipSystem.cancel(0,{from:subscriber});
+
+        assert(await membershipSystem.memberships(subscriber,0).length === undefined );
+
+    });
+
+
+    it('refunding a membership', async() => {
+
+        await membershipSystem.createMembershipPlan(token.address, 100, THIRTY_DAYS, {from: merchant});
+        await membershipSystem.subscribe(0, {from: subscriber});
+
+        await time.increase(ONE_WEEK + 1);
+
+        await membershipSystem.refund(subscriber,0,60,{from:merchant});
+
+        assert(await membershipSystem.memberships(subscriber,0).length === undefined );
+
+
+    });
+
+
 });
