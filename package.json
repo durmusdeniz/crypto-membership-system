@@ -1,0 +1,30 @@
+{
+  "name": "crypto-membership-system",
+  "version": "1.0.0",
+  "description": "Bare-mininum membership contract",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.2.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/test-helpers": "^0.5.12",
+    "web3": "^1.4.0"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/durmusdeniz/crypto-membership-system.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/durmusdeniz/crypto-membership-system/issues"
+  },
+  "homepage": "https://github.com/durmusdeniz/crypto-membership-system#readme"
+}
